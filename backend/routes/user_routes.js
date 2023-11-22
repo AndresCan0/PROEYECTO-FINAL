@@ -40,7 +40,7 @@ routerprod.post('/login',[
 
             if (user) {
                 req.session = user;
-                res.json({ message: `Inicio de sesión exitoso como: ${user.role}`});
+                res.json({ message: `Inicio de sesión exitoso como: ${user.role}`, role: user.role});
             } else {
                 res.json({ message: 'Nombre de usuario o contraseña incorrectos'});
             }

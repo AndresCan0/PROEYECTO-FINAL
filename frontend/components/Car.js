@@ -18,7 +18,8 @@ import { useNavigation } from '@react-navigation/native';
 const url = "http://192.168.10.12:4000/api";
 
 export default function Car() {
-    const navigation = useNavigation();
+  const navigation = useNavigation();
+    
     const {
         control,
         handleSubmit,
@@ -29,39 +30,25 @@ export default function Car() {
         defaultValues: {
           platenumber: "",
           brand: "",
-          state:"",
           dailyvalue:"",
+          status:"disponible",
+          
         },
       });
     const [DataCars, setDataCars] = useState([]);
-    const [platenumber, setPlatenumber] = useState("");
     const [message, setMessage] = useState("");
     const [isError, setIsError] = useState(false);
+  
 
     /* Spinner de Estados */
-   
-    const states = [
+    const [status, setStatus] = useState("disponible");
+    const status_spinner = [
       {label: 'Disponible', value: 'disponible'},
       {label: 'No Disponible', value: 'no disponible'},
     ];
-
-  
-    const getCar = async () => {
-        try {
-          const response = await axios.get(`${url}/list`);
-          console.log(response);
-          if (!response.data.error) {
-            setDataCars(response.data);
-          }
-          else {
-            console.log("No hay carros para mostrar");
-          }
-        } catch (error) {
-          console.log(error);
-        }
-      };
       const getCarsByPlatenumber = async (platenumber) => {
-        const response = await axios.get(`${url}/${platenumber}`);
+        console.log(platenumber)
+        const response = await axios.get(`${url}/cars/${platenumber}`);
         if (!response.data.error) {
           setValue("brand", response.data.brand);
           setValue("state", response.data.state);
@@ -74,22 +61,31 @@ export default function Car() {
       };
     
       const onSave = async (data) => {
-        try {
-          const resp = await axios.get(`${url}/cars/list`);
-          console.log(data)
-          if (resp.data == null) {
-            const response = await axios.post(`${url}`, data);
-            getCar();
-            setMessage("Carro agregado correctamente...");
-            setIsError(false)
-          }
-          else {
-            setMessage("Placa de carro ya EXISTE. Inténte con otra ...");
+        
+        console.log(data)
+
+        try{
+          const resp = await axios.post(`${url}/cars`,data);
+          if (resp.data.errors){
+            setMessage(response.data.errors[0].msg); 
             setIsError(true);
+          }else if (resp.data.message === 'La placa del auto ya exite, ingresa otro...') {
+            // Usuario existe
+            setMessage(resp.data.message);
+            setIsError(true);
+            reset()
+      
+          }else {
+            // Usuario creado correctamente
+         
+            setMessage(resp.data.message); 
+            setIsError(false);
+            reset()
           }
-    
-        } catch (error) {
-          console.log(error);
+        }
+        catch{
+
+
         }
       };
     
@@ -126,31 +122,32 @@ export default function Car() {
                 icon="arrow-left"
                 color="#000"
                 size={25}
-                onPress={() => navigation.navigate('Login')} // Reemplaza 'Login' con el nombre correcto de tu vista de inicio de sesión
+                onPress={() => navigation.navigate('Login')} 
                 style={car_style.backButton}
             />
             <View style={car_style.form_container}>
             <Text style={car_style.title}>REGISTRAR VEHICULO</Text>
                 <View style={car_style.input_container}> 
-                    <Controller
-                        control={control}
-                        rules={{
-                        required: true,
-                        }}
-                        render = {({field: { onChange, onBlur, value }}) => (
-                        <TextInput 
-                            label="Placa del Carro"
-                            style={car_style.input}
-                            onChangeText={onChange}
-                            value={value}
-                            onBlur={onBlur}
-                        />
-                        )}
-                        name="platenumber"
-                    />
-                    {errors.platenumber?.type == "required" && (
-                    <Text style={{ color: "red" }}>Placa obligatoria</Text>
-                    )}
+                <Controller
+                control={control}
+                rules={{
+                required: true,
+                }}
+                render={({ field: { onChange, onBlur, value } }) => (
+                <TextInput
+                  label="Numero de Placa"
+                  style={car_style.input}
+                  onChangeText={onChange}
+                  value={value}
+                  onBlur={onBlur}
+                
+                />
+              )}
+              name="platenumber"
+              />
+              {errors.platenumber?.type == "required" && (
+              <Text style={{ color: "red" }}>Numero de Placa es obligatoria</Text>
+              )}
 
                     <Controller
                         control={control}
@@ -189,7 +186,7 @@ export default function Car() {
                         name="dailyvalue"
                     />
                     {errors.brand?.type == "required" && (
-                    <Text style={{ color: "red" }}>Marca obligatoria</Text>
+                    <Text style={{ color: "red" }}>Valor diario obligatoria</Text>
                     )}
 
 
@@ -204,21 +201,21 @@ export default function Car() {
                             setstate(itemValue)  
                             }}  
                         >
-                        {states.map(item => (
+                        {status_spinner.map(item => (
                         <Picker.Item key={item.value} label={item.label} value={item.value} /> 
                             ))}
                         </Picker>
                         )}
-                        name="state"
+                        name="status"
                         />
 
 
                     <View style={car_style.button_container}>
                         <View style={car_style.row_button_container}>
                         <Button
-                            style={{...car_style.button}}
+                            style={car_style.button}
                             textColor="#ffffff"
-                            onPress={onSave}
+                            onPress={handleSubmit(onSave)}
                         >
                             Guardar
                         </Button>
@@ -247,6 +244,11 @@ export default function Car() {
                             Eliminar
                         </Button>
                         </View>
+                        {message && (
+          <Text style={isError ? car_style.message_error : car_style.message_success}>
+            {message}
+          </Text>
+        )}
                     </View>
                 </View>  
 

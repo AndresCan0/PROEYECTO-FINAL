@@ -121,9 +121,32 @@ const car_style = StyleSheet.create ({
         alignItems: 'center',
         justifyContent: 'center',
         fontWeight: '600',
-    }
+    },
 
-    // -------------------
+    // ------------------- Estilos datepicker
+
+    datePickerContainer: {
+        marginBottom: 20,
+        alignItems: 'center',
+        position: 'relative'
+      },
+      
+      datePicker: {
+        width: '100%',
+        padding: 10,
+        fontFamily: 'Tahoma',
+        backgroundColor: 'white',
+        color: 'black',
+        borderWidth: 1,
+        borderColor: '#ff6961',
+        borderRadius: 5,
+        position: 'absolute', 
+        zIndex: 1,
+      },
+
+
+
+
 
 });
 

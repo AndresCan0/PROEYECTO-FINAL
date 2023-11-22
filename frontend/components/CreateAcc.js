@@ -80,7 +80,7 @@ export default function CreateAcc({navigation}) {
       
           } else {
             // Usuario creado correctamente
-            getUsers();
+         
             setMessage(resp.data.message); 
             setIsError(false);
           }
@@ -92,9 +92,7 @@ export default function CreateAcc({navigation}) {
 
       
 
-      useEffect(()=>{
-        getUsers()
-      },[])
+      
       return(
         <View style={LoginStyles.container}>
           <View style={LoginStyles.login_container}>

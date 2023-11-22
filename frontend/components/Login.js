@@ -13,7 +13,7 @@ import axios from "axios";
 import { TextInput, Avatar, Button, IconButton } from "react-native-paper";
 import {LoginStyles} from  "../assets/css/login_Styles";
 
-const url = "http://172.16.60.103:4000/api/login"
+const url = "http://192.168.10.12:4000/api"
   
 export default function Login({navigation}) {
     const {
@@ -26,7 +26,7 @@ export default function Login({navigation}) {
         defaultValues: {
             username: "",
             password: "",
-            role:""
+            
 
         },
     });
@@ -37,43 +37,39 @@ export default function Login({navigation}) {
     const [showPassword, setShowPassword] = useState(false);
 
 
+    const signIn = async (data) => {
+      try {
+          const response = await axios.post(`${url}/login`, {
+              username: data.username,
+              password: data.password,
+          });
+  
+          if (response.data.message.includes('exitoso')) {
+              // Aquí puedes manejar el éxito del inicio de sesión, por ejemplo, redirigir a otra pantalla.
+              console.log(response.data.message);
+                console.log(response.data.role)
 
-    const getUsers = async () => {
-        try {
-          const response = await axios.get(url);
-          console.log(response);
-          if (!response.data.error) {
-            setDataUsers(response.data);
-          }
-          else {
-            console.log("No hay usuarios para mostrar");
-          }
-        } catch (error) {
-          console.log(error);
-        }
-      };
-
-      const signIn = async () => {
-        try {
-          const loggedUser = await axios.post(`${url}`, {username, password});
-          
-          if (loggedUser.data.rol === "usuario") {
-            navigation.navigate('rentcar');
-          } else if (loggedUser.data.rol === "admin") {
-            navigation.navigate('adminScreen'); 
-          }
-        } catch (error) {
-          if (error.response && error.response.status === 400) {
+                // Verificar el rol del primer usuario (asumo que el rol está en la propiedad 'role').
+                if (response.data.role === 'usuario') {
+                    // Redirigir a la pantalla 'Car' si el rol es 'administrador'.
+                    navigation.navigate('rentCar');
+                } else if(response.data.role === 'administrador'){
+                    // Redirigir a la pantalla 'RentCar' si el rol es 'usuario'.
+                    navigation.navigate('Car');
+                }
             
-            console.error('Error 400: Nombre de usuario y/o contraseña incorrectos');
-          
           } else {
-           
-            console.error('Error durante el inicio de sesión:', error.message);
-
+              // Aquí puedes manejar el caso en el que el inicio de sesión no fue exitoso.
+              console.log(response.data.message);
           }
-        }
-      };
+      } catch (error) {
+          // Aquí puedes manejar errores de la solicitud, como problemas de red.
+          console.error(error);
+      }
+  };
+  
+
+      
 
       return(
 
