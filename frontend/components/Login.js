@@ -13,7 +13,7 @@ import axios from "axios";
 import { TextInput, Avatar, Button, IconButton } from "react-native-paper";
 import {LoginStyles} from  "../assets/css/login_Styles";
 
-const url = "http://192.168.10.12:4000/api"
+const url = "http://192.168.10.10:3000/api"
   
 export default function Login({navigation}) {
     const {
@@ -51,16 +51,21 @@ export default function Login({navigation}) {
 
                 // Verificar el rol del primer usuario (asumo que el rol está en la propiedad 'role').
                 if (response.data.role === 'usuario') {
-                    // Redirigir a la pantalla 'Car' si el rol es 'administrador'.
-                    navigation.navigate('rentCar');
+                    // Redirigir a la pantalla 'Car' si el rol es 'administrador'.}
+                    navigation.navigate('RentCar');
+                    
+                    reset()
                 } else if(response.data.role === 'administrador'){
                     // Redirigir a la pantalla 'RentCar' si el rol es 'usuario'.
-                    navigation.navigate('Car');
+                    navigation.navigate('AdminScreen');
+                    reset()
                 }
             
           } else {
               // Aquí puedes manejar el caso en el que el inicio de sesión no fue exitoso.
               console.log(response.data.message);
+              setMessage(response.data.message)
+              setIsError(true)
           }
       } catch (error) {
           // Aquí puedes manejar errores de la solicitud, como problemas de red.
@@ -146,7 +151,11 @@ export default function Login({navigation}) {
                     >
                     ¿Olvido su constraseña?
                 </Button>
-
+                {message && (
+              <Text style={{ color: isError ? "red" : "green", marginTop: 10 }}>
+              {message}
+            </Text>
+            )}
             </View>
                 </View>
 

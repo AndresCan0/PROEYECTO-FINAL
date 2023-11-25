@@ -14,7 +14,7 @@ import { TextInput, Avatar, Button, IconButton } from "react-native-paper";
 import {LoginStyles} from  "../assets/css/login_Styles";
 
 
-const url = "http://172.16.60.103:4000/api/forgotpassword"
+const url = "http://192.168.10.10:3000/api";
 
 
 export default function ForgotPass({navigation}) {
@@ -28,14 +28,10 @@ export default function ForgotPass({navigation}) {
       } = useForm({
         defaultValues: {
           username: "",
-          name: "",
-          password: "",
-          role: "",
-          reservword:""
+          reservedword: "",
+          newPassword:""
         },
       });
-      const [dataUsers, setDataUsers] = useState([]);
-    const [id, setId] = useState("");
     const [message, setMessage] = useState("");
     const [isError, setIsError] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
@@ -43,43 +39,37 @@ export default function ForgotPass({navigation}) {
 
 
 
-    const getUsers = async () => {
-        try {
-          const response = await axios.get(url);
-          console.log(response);
-          if (!response.data.error) {
-            setDataUsers(response.data);
-          }
-          else {
-            console.log("No hay clientes para mostrar");
-          }
-        } catch (error) {
-          console.log(error);
+   
+
+
+    const forgotPassword = async (data) => {
+      try {
+        console.log(data)
+        const response = await axios.post(`${url}/forgotpassword`, data);
+        console.log(response)
+  
+        if (response.data.message === 'Contraseña actualizada correctamente') {
+          setMessage(response.data.message);
+          setIsError(false);
+        } else {
+        
+          setMessage(response.data.message);
+          setIsError(true);
         }
-      };
-
-
-    const forgotPasword = async (data) => {
-        try {
-          const response = await axios.post(`${url}`, data);
-          setMessage("Contraseña actualizada correctamente...");
-          getUsers();
-          setIsError(false)
-        } catch (error) {
-          console.log(error);
-        }
-
-    useEffect(()=>{
-        getUsers()
-    },[])
-      };
+      } catch (error) {
+        console.error(error);
+        // Mostrar un mensaje de error genérico
+        setMessage("Hubo un error al procesar la solicitud");
+        setIsError(true);
+      }
+    };
 
       return(
 
         <View style={LoginStyles.container}>
 
             <View style={LoginStyles.login_container}>
-                <Text style={LoginStyles.title}>Login </Text>
+                <Text style={LoginStyles.title}>Reiniciar Contraseña </Text>
 
                 <View style={LoginStyles.input_container}>
                         <Controller
@@ -114,15 +104,12 @@ export default function ForgotPass({navigation}) {
                                     onChangeText={onChange}
                                     value={value}
                                     onBlur={onBlur}
-                                    secureTextEntry={!showPassword}
-                                    icon={showPassword ? 'car-door' : 'car-door-lock'}
-                                    onPress={() => setShowPassword(!showPassword)}
                                     />  
                                     )}
-                            name="reservword"
+                            name="reservedword"
                          />
-                        {errors.reservword?.type == "required" && (
-            <Text style={{ color: "red" }}>Ingrese una palabra reservada</Text>
+                        {errors.reservedword?.type == "required" && (
+            <Text style={{ color: "red" }}>Ingrese su palabra reservada</Text>
             )}
 
 
@@ -142,9 +129,9 @@ export default function ForgotPass({navigation}) {
                                     onPress={() => setShowPassword(!showPassword)}
                                     />  
                                     )}
-                                    name="password"
+                                    name="newPassword"
                          />
-                        {errors.username?.type == "required" && (
+                        {errors.newPassword?.type == "required" && (
                         <Text style={{ color: "red" }}>Contraseña es obligatorio</Text>
                         )}
 
@@ -153,7 +140,7 @@ export default function ForgotPass({navigation}) {
                 <Button
                 style={LoginStyles.button}
                 textColor="black"
-                onPress={handleSubmit(forgotPasword)}
+                onPress={handleSubmit(forgotPassword)}
                 >
                     Actualizar Contraseña
                 </Button>
@@ -164,6 +151,11 @@ export default function ForgotPass({navigation}) {
                     >
                     Volver
                 </Button>
+                {message && (
+              <Text style={{ color: isError ? "red" : "green", marginTop: 10 }}>
+              {message}
+            </Text>
+            )}
 
             </View>
                 </View>

@@ -1,8 +1,8 @@
 const mongoose = require("mongoose");
 
+
 const rentSchema = new mongoose.Schema({
     rentnumber: { type: Number, required: true, unique: true, index: true },
-    username: { type: String, required: true, trim: true },
     platenumber: { type: String, required: true, trim: true },
     initialdate: { type: Date, required: true, min: Date.now },
     finaldate: { type: Date, required: true, validate: { validator: function (value) { return value >= this.initialdate; }, message: "La fecha final debe ser igual o superior a la fecha inicial" }},

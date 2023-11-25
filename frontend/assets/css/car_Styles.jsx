@@ -137,12 +137,29 @@ const car_style = StyleSheet.create ({
         fontFamily: 'Tahoma',
         backgroundColor: 'white',
         color: 'black',
-        borderWidth: 1,
-        borderColor: '#ff6961',
-        borderRadius: 5,
+        border: '1px solid #ff6961',
         position: 'absolute', 
         zIndex: 1,
       },
+
+      // ------------------- Estilos Picker
+
+  pickerContainer: {
+    margin: 10,
+    padding: 5,
+    fontFamily: 'Tahoma',
+    backgroundColor: 'white',
+    color: 'black',
+    border: '1px solid #ff6961',
+    borderRadius: 5,
+    width: '100%',
+  },
+
+  picker: {
+    height: 40,
+    color: 'black',
+  },
+
 
 
 

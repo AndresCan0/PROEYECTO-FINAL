@@ -15,7 +15,7 @@ import {LoginStyles} from  "../assets/css/login_Styles";
 
 
 
-const url = "http://192.168.10.12:4000/api";
+const url = "http://192.168.10.10:3000/api";
 
 export default function CreateAcc({navigation}) {
     const {
@@ -50,7 +50,7 @@ export default function CreateAcc({navigation}) {
 
     const getUsers = async () => {
         try {
-          const response = await axios.get(`${url}/accounts`);
+          const response = await axios.get( );
           console.log(response);
           if (!response.data.error) {
             setDataUsers(response.data.users);
